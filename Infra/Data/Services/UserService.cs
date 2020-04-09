@@ -25,12 +25,8 @@ namespace Data.Services
             return null;
         }
 
-        public async Task<String> ForgotPasswordAsync(string email)
+        public async Task<String> ForgotPasswordAsync(User user)
         {
-            User user = await _userRepository.GetByEmailAsync(email);
-            if (user == null)
-                return null;
-
             string code = await _userManager.GeneratePasswordResetTokenAsync(user);
             // TODO: Send email with password reset code
             return code;

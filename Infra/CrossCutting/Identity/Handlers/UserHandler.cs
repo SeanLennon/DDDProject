@@ -31,7 +31,7 @@ namespace Identity.Handlers
         {
             try
             {
-                User user = new User(fullName: command.FullName, username: command.UserName, email: command.Email);
+                User user = new User(command.FullName, command.UserName, command.Email);
                 IdentityResult result = await _service.InsertAsync(user, command.Password);
                 if (result.Succeeded)
                 {
@@ -65,7 +65,11 @@ namespace Identity.Handlers
         {
             try
             {
-                string code = await _service.ForgotPasswordAsync(command.Email);
+                User user = await _service.GetByEmailAsync(command.Email);
+                if (user == null)
+                    return new CommandResult(false, Messages.USER_NOT_FOUND, null);
+
+                string code = await _service.ForgotPasswordAsync(user);
                 if (code == null)
                     return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 
