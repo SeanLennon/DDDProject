@@ -1,0 +1,17 @@
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Data.deps.json
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Data.dll
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Data.pdb
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Domain.dll
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Identity.dll
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Domain.pdb
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Identity.pdb
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.csprojAssemblyReference.cache
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.csproj.CoreCompileInputs.cache
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.AssemblyInfoInputs.cache
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.AssemblyInfo.cs
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.csproj.CopyComplete
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.dll
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.pdb
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Data.runtimeconfig.json
+/home/sean/www/DDDProject/Infra/Data/bin/Debug/netcoreapp3.1/Data.runtimeconfig.dev.json
+/home/sean/www/DDDProject/Infra/Data/obj/Debug/netcoreapp3.1/Data.genruntimeconfig.cache
