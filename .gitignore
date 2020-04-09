@@ -1,0 +1,8 @@
+/Api/bin
+/Api/obj
+/Domain/bin
+/Domain/obj
+/Infra/Data/bin
+/Infra/Data/obj
+/Infra/CrossCutting/Identity/bin
+/Infra/CrossCutting/Identity/obj
