@@ -1,0 +1,3 @@
+# The following supports conditional compilation if X is defined.
+USER_FOUND                = Usuário encontrado
+USER_AUTHENTICATE_SUCCESS = Autenticado com successo

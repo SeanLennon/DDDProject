@@ -9,7 +9,7 @@ namespace Data.Setup
     {
         public static void Add(IServiceCollection services)
         {
-            services.AddIdentity<User, IdentityRole>()
+            services.AddDefaultIdentity<User>()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<UserDbContext>();
 

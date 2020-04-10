@@ -14,7 +14,7 @@ namespace Identity.Context
             Database.EnsureCreated();
         }
 
-        public DbSet<User> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -35,7 +35,7 @@ namespace Identity.Context
         {
             options.EnableDetailedErrors(true);
             options.EnableSensitiveDataLogging(true);
-            options.UseNpgsql("Host=localhost; Port=5432; User ID=sean; Password=sean@123; Database=DDDProjectUser;", x =>
+            options.UseNpgsql("Host=localhost; Port=5432; User ID=sean; Password=sean@123; Database=DDDProjectUser; Integrated Security=true; Pooling=true;", x =>
             {
                 x.MigrationsAssembly("Api");
                 x.SetPostgresVersion(0, 1);

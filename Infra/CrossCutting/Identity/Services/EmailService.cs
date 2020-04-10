@@ -9,7 +9,7 @@ namespace Identity.Services
 {
     public static class EmailService
     {
-        public static async Task<SmtpStatusCode> SendResetPasswordAsync(string email, string message, string subject)
+        public static async Task<SmtpStatusCode> SendAsync(string email, string message, string subject)
         {
             IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 

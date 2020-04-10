@@ -9,14 +9,15 @@ namespace Domain.Extensions
 {
     public static class UserExtension
     {
-        //
-        // Summary:
-        //     Generate Json Web Token.
-        // Returns:
-        //     The Token Jwt.
-        // Exceptions:
-        //   T:System.ArgumentNullException:
-        //     type or value in user is null.
+        /// <summary>
+        /// Summary:
+        ///     Generate Json Web Token.
+        /// Returns:
+        ///     The Token Jwt.
+        /// Exceptions:
+        ///   T:System.ArgumentNullException:
+        ///     type or value in user is null.
+        /// </summary>
         public static String Jwt(this User user)
         {
             var tokenDescriptor = new SecurityTokenDescriptor()

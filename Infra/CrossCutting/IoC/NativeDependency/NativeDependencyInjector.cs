@@ -8,6 +8,7 @@ using Identity.Context;
 using Identity.Handlers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace IoC.NativeDependency
 {
@@ -15,8 +16,8 @@ namespace IoC.NativeDependency
     {
         public static void Inject(IServiceCollection services)
         {
-            services.AddScoped<UserDbContext>();
-            services.AddScoped<AppDbContext>();
+            services.AddTransient<UserDbContext>();
+            services.AddTransient<AppDbContext>();
             services.AddScoped<UserManager<User>>();
             services.AddTransient<UserHandler>();
             services.AddTransient<IUserService, UserService>();
