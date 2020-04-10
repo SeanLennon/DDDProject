@@ -43,7 +43,11 @@ namespace Identity.Handlers
                 IdentityResult result = await _service.InsertAsync(user, command.Password);
                 if (result.Succeeded)
                 {
-                    // TODO: Send wellcome email
+                    string message = string.Format("<strong><b>Wellcome {0}! Registered successfully.</b></strong>", command.FullName);
+                    SmtpStatusCode status = await EmailService.SendAsync(command.Email, message, $"Wellcome {command.FullName}");
+                    if (status == SmtpStatusCode.GeneralFailure)
+                        return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
+
                     return new CommandResult(true, Messages.USER_REGISTER_SUCCESS, user.Response());
                 }
                 return new CommandResult(false, Messages.USER_REGISTER_FAILED, result.Errors);
