@@ -4,6 +4,6 @@ namespace Domain.Interfaces.Services
 {
     public interface IEmailSend
     {
-        Task Send(string message, string subject, string to);
+        Task SendWellComeEmailAsync(string message, string subject, string email);
     }
 }

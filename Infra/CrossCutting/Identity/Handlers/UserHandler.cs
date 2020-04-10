@@ -1,4 +1,5 @@
 using System;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Extensions;
@@ -8,6 +9,7 @@ using Domain.Interfaces.Services;
 using Domain.Resources;
 using Identity.Commands.Users;
 using Identity.Models;
+using Identity.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Handlers
@@ -69,11 +71,13 @@ namespace Identity.Handlers
                 if (user == null)
                     return new CommandResult(false, Messages.USER_NOT_FOUND, null);
 
-                string code = await _service.ForgotPasswordAsync(user);
-                if (code == null)
+                string token = await _service.ForgotPasswordAsync(user);
+                string message = string.Format("Clique no link para redefinir sua senha: <a href=\"https://localhost:5001/reset-password?email={0}&token={1}\">{1}</a><br><p>Caso não tenha sido você ignore esse E-mail.</p>", user.Email, token);
+                SmtpStatusCode status = await EmailService.SendResetPasswordAsync(user.Email, message, "Reset Password");
+                if (status == SmtpStatusCode.GeneralFailure)
                     return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 
-                return new CommandResult(true, Messages.FORGOT_PASSWORD_SUCCESS, code);
+                return new CommandResult(true, Messages.FORGOT_PASSWORD_SUCCESS, null);
             }
             catch (Exception ex)
             {
