@@ -1,3 +1,5 @@
 # The following supports conditional compilation if X is defined.
 USER_FOUND                = Usuário encontrado
+USER_NOT_FOUND            = Usuário não encontrado
 USER_AUTHENTICATE_SUCCESS = Autenticado com successo
+USER_AUTHENTICATE_FAILED  = Autenticação falhou
