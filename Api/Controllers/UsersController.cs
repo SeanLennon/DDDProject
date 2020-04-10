@@ -22,16 +22,6 @@ namespace Api.Controllers
         }
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        public IActionResult Get()
-        {
-            // var culture = Request.Path.Value.Split('/')[3]?.ToString();
-            // var command = new CommandResult(true, _localizer.GetString("USER_FOUND").Value, _localizer.GetString("USER_FOUND"));
-            return Ok(_localizer.GetString("USER_FOUND").Value);
-        }
-
-
         // GET: https://api.localhost:5001/en-us/users/authenticate
         [AllowAnonymous]
         [HttpGet, Route("authenticate")]
@@ -40,9 +30,10 @@ namespace Api.Controllers
             var result = await _handler.Handler(command);
             if (result.Succeeded)
             {
-                result.Message = _localizer.GetString("USER_AUTHENTICATE_SUCCESS");
+                result.Message = _localizer["USER_AUTHENTICATE_SUCCESS"].Value;
                 return Ok(result);
             }
+            result.Message = _localizer["USER_AUTHENTICATE_FAILED"].Value;
             return BadRequest(result);
         }
 
@@ -55,7 +46,11 @@ namespace Api.Controllers
         {
             var result = await _handler.Handler(command);
             if (result.Succeeded)
+            {
+                result.Message = _localizer["FORGOT_PASSWORD_SUCCESS"].Value;
                 return Ok(result);
+            }
+            result.Message = _localizer["FORGOT_PASSWORD_FAILED"].Value;
             return BadRequest(result);
         }
 
@@ -70,7 +65,11 @@ namespace Api.Controllers
             command.Token = token;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
+            {
+                result.Message = _localizer["RESET_PASSWORD_SUCCESS"].Value;
                 return Ok(result);
+            }
+            result.Message = _localizer["RESET_PASSWORD_FAILED"].Value;
             return BadRequest(result);
         }
 
@@ -84,7 +83,11 @@ namespace Api.Controllers
             command.Email = Request.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
+            {
+                result.Message = _localizer["CHANGE_PASSWORD_SUCCESS"].Value;
                 return Ok(result);
+            }
+            result.Message = _localizer["CHANGE_PASSWORD_FAILED"].Value;
             return BadRequest(result);
         }
 
@@ -97,7 +100,11 @@ namespace Api.Controllers
         {
             var result = await _handler.Handler(command);
             if (result.Succeeded)
+            {
+                result.Message = _localizer["USER_REGISTER_SUCCESS"].Value;
                 return Created($"https://api.localhost:5001/en-us/users/profile", result);
+            }
+            result.Message = _localizer["USER_REGISTER_FAILED"].Value;
             return BadRequest(result);
         }
 
@@ -111,8 +118,12 @@ namespace Api.Controllers
             command.Email = Request.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
+            {
+                result.Message = _localizer["FIND_PROFILE_SUCCESS"].Value;
                 return Ok(result);
-            return NoContent();
+            }
+            result.Message = _localizer["FIND_PROFILE_FAILED"].Value;
+            return NotFound(result);
         }
 
 
@@ -125,8 +136,12 @@ namespace Api.Controllers
             command.Email = Request.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
+            {
+                result.Message = _localizer["CHANGE_NAME_SUCCESS"].Value;
                 return Ok(result);
-            return BadRequest();
+            }
+            result.Message = _localizer["CHANGE_NAME_FAILED"].Value;
+            return BadRequest(result);
         }
     }
 }

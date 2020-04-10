@@ -27,8 +27,20 @@
       </xsd:complexType>
     </xsd:element>
   </xsd:schema>
-<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, resgen, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, resgen, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null</value></resheader><data name="USER_AUTHENTICATE_SUCCESS"><value>Authenticated successfully</value></data>
-  <data name="USER_AUTHENTICATE_FAILED"><value>Authentication failed</value></data>
-  <data name="USER_FOUND"><value>User found</value></data>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, resgen, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, resgen, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null</value></resheader><data name="FORGOT_PASSWORD_FAILED"><value>Email submission failed</value></data>
+  <data name="USER_REGISTER_FAILED"><value>Unregistered user</value></data>
+  <data name="RESET_PASSWORD_FAILED"><value>Reset password failed</value></data>
+  <data name="CHANGE_NAME_SUCCESS"><value>Change name successfully</value></data>
+  <data name="FORGOT_PASSWORD_SUCCESS"><value>Email sent to success</value></data>
   <data name="USER_NOT_FOUND"><value>User not found</value></data>
+  <data name="FIND_PROFILE_SUCCESS"><value>Profile found successfully</value></data>
+  <data name="USER_AUTHENTICATE_SUCCESS"><value>Authenticated successfully</value></data>
+  <data name="USER_FOUND"><value>User found</value></data>
+  <data name="USER_AUTHENTICATE_FAILED"><value>Authentication failed</value></data>
+  <data name="RESET_PASSWORD_SUCCESS"><value>Reset password successfully</value></data>
+  <data name="USER_REGISTER_SUCCESS"><value>Registered with success</value></data>
+  <data name="FIND_PROFILE_FAILED"><value>Profile not found</value></data>
+  <data name="CHANGE_NAME_FAILED"><value>Change name failed</value></data>
+  <data name="CHANGE_PASSWORD_SUCCESS"><value>Change password successfully</value></data>
+  <data name="CHANGE_PASSWORD_FAILED"><value>Change password failed</value></data>
   </root>

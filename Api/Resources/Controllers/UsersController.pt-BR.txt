@@ -1,5 +1,24 @@
 # The following supports conditional compilation if X is defined.
 USER_FOUND                = Usuário encontrado
 USER_NOT_FOUND            = Usuário não encontrado
+
 USER_AUTHENTICATE_SUCCESS = Autenticado com successo
 USER_AUTHENTICATE_FAILED  = Autenticação falhou
+
+USER_REGISTER_SUCCESS     = Registrado com sucesso
+USER_REGISTER_FAILED      = Registro falhou
+
+FORGOT_PASSWORD_SUCCESS   = E-mail enviado com sucesso
+FORGOT_PASSWORD_FAILED    = Envio do e-mail falhou
+
+RESET_PASSWORD_SUCCESS    = Senha recuperada com sucesso
+RESET_PASSWORD_FAILED     = Recuperação de senha falhou
+
+CHANGE_PASSWORD_SUCCESS   = Senha alterada com sucesso
+CHANGE_PASSWORD_FAILED    = Alteração de senha falhou
+
+CHANGE_NAME_SUCCESS       = Nome alterado com sucesso
+CHANGE_NAME_FAILED        = Alteração de nome falhou
+
+FIND_PROFILE_SUCCESS      = Perfil encontrado com sucesso
+FIND_PROFILE_FAILED       = Perfil não encontrado
