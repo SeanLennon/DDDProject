@@ -12,7 +12,7 @@ namespace Api.Extensions
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            string culture = context.Request.Headers.FirstOrDefault(x => x.Key == "Localization").Value;
+            string culture = context.Request.Headers.FirstOrDefault(x => x.Key == "Content-Language").Value;
             if (culture == null) culture = "en-US";
             var provider = new ProviderCultureResult(culture, culture.ToLower());
             return Task.FromResult(provider);

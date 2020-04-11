@@ -10,11 +10,11 @@ namespace Api.Extensions
         public bool Match(HttpContext context, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
-            if (!context.Request.Headers.ContainsKey("Localization"))
+            if (!context.Request.Headers.ContainsKey("Content-Language"))
                 return false;
 
             string culture = context.Request.Headers
-                .FirstOrDefault(x => x.Key == "Localization").Value;
+                .FirstOrDefault(x => x.Key == "Content-Language").Value;
             return culture == "en-US" || culture == "pt-BR";
         }
     }

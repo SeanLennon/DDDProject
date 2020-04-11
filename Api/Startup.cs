@@ -111,7 +111,7 @@ namespace Api
             services.AddLocalization(x => x.ResourcesPath = "Resources");
             services.Configure<RouteOptions>(x =>
             {
-                x.ConstraintMap.Add("culture", typeof(LanguageRouteConstraint));
+                x.ConstraintMap.Add("Content-Language", typeof(LanguageRouteConstraint));
             });
 
             services.AddControllers();
