@@ -27,6 +27,8 @@ namespace Api
 {
     public class Startup
     {
+        private IConfiguration _configuration { get; }
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder()
@@ -38,20 +40,18 @@ namespace Api
             {
                 builder.AddUserSecrets<Startup>();
             }
-            Configuration = builder.Build();
+            _configuration = builder.Build();
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // DatabaseSettings database = Configuration.GetSection("AppConnectionString").Get<DatabaseSettings>();
-            var conn = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("AppConnectionString"))
+            var conn = new NpgsqlConnectionStringBuilder(_configuration.GetConnectionString("AppConnectionString"))
             {
-                Database = Configuration["DatabaseSettings:Name"],
-                Username = Configuration["DatabaseSettings:Username"],
-                Password = Configuration["DatabaseSettings:Password"]
+                Database = _configuration["DatabaseSettings:Name"],
+                Username = _configuration["DatabaseSettings:Username"],
+                Password = _configuration["DatabaseSettings:Password"]
             }.ConnectionString;
 
             services.AddDbContext<UserDbContext>(x =>
