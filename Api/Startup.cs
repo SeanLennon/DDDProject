@@ -2,33 +2,43 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Net.Http;
+using System.Linq;
 using System.Text;
 using Api.Configuration;
-using Api.Controllers;
 using Api.Extensions;
+using Data.Context;
+using Identity.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 // using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 namespace Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            IConfigurationBuilder builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -36,45 +46,28 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            /* services.AddMvcCore()
-                .AddMvcLocalization()
-                .AddDataAnnotationsLocalization()
-                .AddDataAnnotations(); */
+            // DatabaseSettings database = Configuration.GetSection("AppConnectionString").Get<DatabaseSettings>();
+            var conn = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("AppConnectionString"))
+            {
+                Database = Configuration["DatabaseSettings:Name"],
+                Username = Configuration["DatabaseSettings:Username"],
+                Password = Configuration["DatabaseSettings:Password"]
+            }.ConnectionString;
+
+            services.AddDbContext<UserDbContext>(x =>
+                x.UseNpgsql(conn, x =>
+                    x.MigrationsAssembly("Api").SetPostgresVersion(0, 1)));
+
+            services.AddDbContext<AppDbContext>(x =>
+                x.UseNpgsql(conn, x =>
+                    x.MigrationsAssembly("Api").SetPostgresVersion(0, 1)));
 
             services.AddDependencyConfig();
             services.AddIdentityConfig();
             services.AddControllers();
-            services.AddDatabaseConfig();
+            // services.AddDatabaseConfig();
             services.AddApiVerisionConfig();
-
-            services.AddLocalization(x => x.ResourcesPath = "Resources");
-            // services.AddLocalization();
-
-            services.Configure<RequestLocalizationOptions>(x =>
-            {
-                var cultures = new List<CultureInfo>()
-                {
-                    new CultureInfo("en-US"),
-                    new CultureInfo("pt-BR")
-                };
-                x.DefaultRequestCulture = new RequestCulture("en-US", "en-US");
-                x.SupportedCultures = cultures;
-                x.SupportedUICultures = cultures;
-                x.RequestCultureProviders = new[]
-                {
-                    new RouteDataRequestCultureProvider
-                    {
-                        IndexOfCulture = 1,
-                        IndexOfUICulture = 1
-                    }
-                };
-                x.SetDefaultCulture("en-US");
-            });
-
-            services.Configure<RouteOptions>(x =>
-            {
-                x.ConstraintMap.Add("Culture", typeof(LanguageRouteConstraint));
-            });
+            // services.AddLocalizationConfig();
 
             services.AddCors(x =>
             {
@@ -115,6 +108,12 @@ namespace Api
                 });
             });
 
+            services.AddLocalization(x => x.ResourcesPath = "Resources");
+            services.Configure<RouteOptions>(x =>
+            {
+                x.ConstraintMap.Add("culture", typeof(LanguageRouteConstraint));
+            });
+
             services.AddControllers();
         }
 
@@ -129,8 +128,30 @@ namespace Api
             app.UseHttpsRedirection();
             app.UseApiVersioning();
 
-            var localize = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-            app.UseRequestLocalization(localize.Value);
+            List<CultureInfo> cultures = new List<CultureInfo>()
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("pt-BR")
+            };
+
+            var options = new RequestLocalizationOptions()
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = cultures,
+                SupportedUICultures = cultures
+            };
+
+            options.RequestCultureProviders = new []
+            {
+                new HeaderDataRequestCultureProvider()
+                {
+                    Options = options
+                }
+            };
+
+            app.UseRequestLocalization(options);
+
+            // app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
             app.UseRouting();
             app.UseAuthentication();

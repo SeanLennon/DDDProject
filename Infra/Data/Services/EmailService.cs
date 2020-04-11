@@ -12,9 +12,10 @@ namespace Data.Services
         {
             return Task.Run(() =>
             {
-                IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+                    .AddEnvironmentVariables().Build();
 
-                using var smtp = new SmtpClient(config["EmailSettings:Server"])
+                using var smtp = new SmtpClient(config["Server"])
                 {
                     Port = int.Parse(config["EmailSettings:Port"]),
                     Credentials = new NetworkCredential(config["EmailSettings:From"], config["EmailSettings:Password"]),

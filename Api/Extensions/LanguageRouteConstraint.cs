@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -5,13 +7,15 @@ namespace Api.Extensions
 {
     public class LanguageRouteConstraint : IRouteConstraint
     {
-        public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
+        public bool Match(HttpContext context, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
-            if (!values.ContainsKey("culture"))
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (!context.Request.Headers.ContainsKey("Localization"))
                 return false;
 
-            var culture = values["culture"].ToString();
-            return culture == "en-us" || culture == "pt-br";
+            string culture = context.Request.Headers
+                .FirstOrDefault(x => x.Key == "Localization").Value;
+            return culture == "en-US" || culture == "pt-BR";
         }
     }
 }

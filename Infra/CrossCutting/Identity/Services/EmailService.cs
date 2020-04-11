@@ -9,9 +9,11 @@ namespace Identity.Services
 {
     public static class EmailService
     {
-        public static async Task<SmtpStatusCode> SendAsync(string email, string message, string subject)
+        public static async Task<SmtpStatusCode> SendAsync(string email, string message, string subject, IConfiguration config)
         {
-            IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            /* var config = new ConfigurationBuilder()
+                .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+                .Build(); */
 
             using var client = new SmtpClient(config["EmailSettings:Server"])
             {

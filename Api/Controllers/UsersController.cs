@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Api.Controllers
 {
-    [Authorize(Policy = "Default"), Route("{culture:culture}/users"), ApiVersion("1.0"), ApiController]
+    [Authorize(Policy = "Default"), Route("users"), ApiVersion("1.0"), ApiController]
     public class UsersController : ControllerBase
     {
         private UserHandler _handler;
@@ -22,7 +22,7 @@ namespace Api.Controllers
         }
 
 
-        // GET: https://api.localhost:5001/en-us/users/authenticate
+        // GET: https://api.localhost:5001/users/authenticate
         [AllowAnonymous]
         [HttpGet, Route("authenticate")]
         public async Task<IActionResult> Authenticate([FromForm]AuthenticateUserCommand command)
@@ -39,7 +39,7 @@ namespace Api.Controllers
 
 
 
-        // GET: https://api.localhost:5001/en-us/users/forgot-password
+        // GET: https://api.localhost:5001/users/forgot-password
         [AllowAnonymous]
         [HttpGet, Route("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromForm]ForgotPasswordCommand command)
@@ -56,7 +56,7 @@ namespace Api.Controllers
 
 
 
-        // PATCH: https://api.localhost:5001/en-us/users/reset-password/email=exemplo@exemplo.com&token=CfDJ8DW0ycF3tRJEv5qbVtaA2vc4
+        // PATCH: https://api.localhost:5001/users/reset-password/email=exemplo@exemplo.com&token=CfDJ8DW0ycF3tRJEv5qbVtaA2vc4
         [AllowAnonymous]
         [HttpPatch, Route("reset-password")]
         public async Task<IActionResult> ResetPassword([FromQuery]string email, [FromQuery]string token, [FromForm]ResetPasswordCommand command)
@@ -75,7 +75,7 @@ namespace Api.Controllers
 
 
 
-        // PATCH: https://api.localhost:5001/en-us/users/change-password
+        // PATCH: https://api.localhost:5001/users/change-password
         [Authorize(Roles = "User")]
         [HttpPatch, Route("change-password")]
         public async Task<IActionResult> ChangePassword([FromForm]ChangePasswordCommand command)
@@ -93,7 +93,7 @@ namespace Api.Controllers
 
 
 
-        // POST: https://api.localhost:5001/en-us/users
+        // POST: https://api.localhost:5001/users
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register([FromForm]RegisterUserCommand command)
@@ -102,7 +102,7 @@ namespace Api.Controllers
             if (result.Succeeded)
             {
                 result.Message = _localizer["USER_REGISTER_SUCCESS"].Value;
-                return Created($"https://api.localhost:5001/en-us/users/profile", result);
+                return Created($"https://api.localhost:5001/users/profile", result);
             }
             result.Message = _localizer["USER_REGISTER_FAILED"].Value;
             return BadRequest(result);
@@ -110,7 +110,7 @@ namespace Api.Controllers
 
 
 
-        // GET: https://api.localhost:5001/en-us/users/profile
+        // GET: https://api.localhost:5001/users/profile
         [Authorize(Roles = "User")]
         [HttpGet, Route("profile")]
         public async Task<IActionResult> Profile([FromRoute]ProfileUserCommand command)
@@ -128,7 +128,7 @@ namespace Api.Controllers
 
 
 
-        // PATCH: https://api.localhost:5001/en-us/users/change-name
+        // PATCH: https://api.localhost:5001/users/change-name
         [Authorize(Roles = "User")]
         [HttpPatch, Route("change-name")]
         public async Task<IActionResult> ChangeName([FromForm]ChangeNameCommand command)

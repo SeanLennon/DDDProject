@@ -6,19 +6,15 @@ using Microsoft.AspNetCore.Localization;
 
 namespace Api.Extensions
 {
-    public class RouteDataRequestCultureProvider : RequestCultureProvider
+    public class HeaderDataRequestCultureProvider : RequestCultureProvider
     {
-        public int IndexOfCulture;
-        public int IndexOfUICulture;
-
         public override Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            string culture = context.Request.Path.Value.Split('/')[IndexOfCulture]?.ToString();
-            string uiCulture = context.Request.Path.Value.Split('/')[IndexOfUICulture]?.ToString().ToLower();
-
-            var provider = new ProviderCultureResult(culture, uiCulture);
+            string culture = context.Request.Headers.FirstOrDefault(x => x.Key == "Localization").Value;
+            if (culture == null) culture = "en-US";
+            var provider = new ProviderCultureResult(culture, culture.ToLower());
             return Task.FromResult(provider);
         }
     }
