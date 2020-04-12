@@ -69,27 +69,12 @@ namespace Identity.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new UserMap());
+            builder.ApplyConfiguration(new RoleMap());
 
-            var noneRole = new Role()
-            {
-                Name = "None",
-                NormalizedName = "None".ToUpper()
-            };
-            var userRole = new Role()
-            {
-                Name = "User",
-                NormalizedName = "User".ToUpper()
-            };
-            var adminRole = new Role()
-            {
-                Name = "Admin",
-                NormalizedName = "Admin".ToUpper()
-            };
-            var managerRole = new Role()
-            {
-                Name = "Manager",
-                NormalizedName = "Manager".ToUpper()
-            };
+            var noneRole = new Role("None");
+            var userRole = new Role("User");
+            var adminRole = new Role("Admin");
+            var managerRole = new Role( "Manager");
 
             builder.Entity<Role>()
                 .HasData(noneRole, userRole, adminRole, managerRole);

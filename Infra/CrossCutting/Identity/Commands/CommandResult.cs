@@ -1,7 +1,7 @@
 using System;
 using Domain.Interfaces.Commands;
 
-namespace Identity.Commands.Users
+namespace Identity.Commands
 {
     public class CommandResult : ICommandResult
     {

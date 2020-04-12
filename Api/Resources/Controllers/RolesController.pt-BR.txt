@@ -1,0 +1,5 @@
+ROLE_FOUND           = Role encontrado com sucesso
+ROLE_NOT_FOUND       = Role não encontrada
+
+ROLE_CREATED_SUCCESS = Role criada com sucesso
+ROLE_CREATED_FAILED  = Criação de Role falhou

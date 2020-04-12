@@ -4,6 +4,7 @@ using Data.Services;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Identity.Commands.Roles;
 using Identity.Context;
 using Identity.Handlers;
 using Identity.Models;
@@ -20,13 +21,20 @@ namespace IoC.NativeDependency
         {
             services.AddTransient<UserDbContext>();
             services.AddTransient<AppDbContext>();
+
             services.AddScoped<UserManager<User>>();
+            services.AddScoped<RoleManager<Role>>();
+
             services.AddTransient<UserHandler>();
+            services.AddTransient<RoleHandler>();
+
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUserService, UserService>();
+
             services.AddTransient<IUserRepository, UserRepository>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddScoped<AuthenticatedUser>();
             services.AddScoped<ResetPasswordContextAccessor>();
             services.AddScoped<ProfileUserCommand>();
