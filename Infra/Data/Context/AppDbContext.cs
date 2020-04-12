@@ -11,7 +11,7 @@ namespace Data.Context
             Database.EnsureCreated();
         }
 
-        public virtual DbSet<User> Users { get; set; }
+        // public virtual DbSet<Token> Tokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

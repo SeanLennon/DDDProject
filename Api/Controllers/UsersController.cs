@@ -59,10 +59,8 @@ namespace Api.Controllers
         // PATCH: https://api.localhost:5001/users/reset-password/email=exemplo@exemplo.com&token=CfDJ8DW0ycF3tRJEv5qbVtaA2vc4
         [AllowAnonymous]
         [HttpPatch, Route("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromQuery]string email, [FromQuery]string token, [FromForm]ResetPasswordCommand command)
+        public async Task<IActionResult> ResetPassword([FromServices]ResetPasswordCommand command)
         {
-            command.Email = email;
-            command.Token = token;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
             {
@@ -80,7 +78,6 @@ namespace Api.Controllers
         [HttpPatch, Route("change-password")]
         public async Task<IActionResult> ChangePassword([FromForm]ChangePasswordCommand command)
         {
-            command.Email = Request.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
             {
@@ -113,9 +110,8 @@ namespace Api.Controllers
         // GET: https://api.localhost:5001/users/profile
         [Authorize(Roles = "User")]
         [HttpGet, Route("profile")]
-        public async Task<IActionResult> Profile([FromRoute]ProfileUserCommand command)
+        public async Task<IActionResult> Profile([FromServices]ProfileUserCommand command)
         {
-            command.Email = Request.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
             {
@@ -133,7 +129,6 @@ namespace Api.Controllers
         [HttpPatch, Route("change-name")]
         public async Task<IActionResult> ChangeName([FromForm]ChangeNameCommand command)
         {
-            command.Email = Request.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
             var result = await _handler.Handler(command);
             if (result.Succeeded)
             {

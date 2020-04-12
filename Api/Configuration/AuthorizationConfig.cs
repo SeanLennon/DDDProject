@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Configuration
@@ -8,6 +10,9 @@ namespace Api.Configuration
         {
             services.AddAuthorization(x =>
             {
+                x.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build();
+
                 x.AddPolicy("Default", p =>
                 {
                     p.RequireRole("User");

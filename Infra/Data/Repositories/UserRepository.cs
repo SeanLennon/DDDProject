@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Data.Context;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -9,8 +10,13 @@ namespace Data.Repositories
     public class UserRepository : IUserRepository
     {
         protected UserManager<User> _userManager;
+        protected AppDbContext _context;
 
-        public UserRepository(UserManager<User> userManager) => _userManager = userManager;
+        public UserRepository(UserManager<User> userManager, AppDbContext context)
+        {
+            _userManager = userManager;
+            _context = context;
+        }
 
 
         public async Task<IdentityResult> InsertAsync(User user, string password)

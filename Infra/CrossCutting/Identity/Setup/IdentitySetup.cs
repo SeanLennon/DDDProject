@@ -9,11 +9,7 @@ namespace Data.Setup
     {
         public static void Add(IServiceCollection services)
         {
-            services.AddDefaultIdentity<User>()
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<UserDbContext>();
-
-            services.Configure<IdentityOptions>(options =>
+            services.AddDefaultIdentity<User>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireNonAlphanumeric = true;
@@ -21,7 +17,10 @@ namespace Data.Setup
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 4;
                 options.User.RequireUniqueEmail = true;
-            });
+            })
+            .AddRoles<Role>()
+            .AddEntityFrameworkStores<UserDbContext>()
+            .AddDefaultTokenProviders();
         }
     }
 }

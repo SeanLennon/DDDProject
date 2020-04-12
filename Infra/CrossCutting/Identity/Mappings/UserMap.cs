@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
 using Domain.Entities;
-using Identity.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +9,7 @@ namespace Identity.Mappings
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("User");
+            builder.ToTable("AspNetUsers");
 
             builder.HasIndex(x => x.FullName).IsUnique().HasName("FullNameIndex");
             builder.HasIndex(x => x.FirstName).HasName("FirstNameIndex");

@@ -1,10 +1,17 @@
+using System;
+using System.Threading.Tasks;
 using Domain.Entities;
 using Identity.Mappings;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
 
 namespace Identity.Context
 {
-    public class UserDbContext : DbContext
+    public class UserDbContext : IdentityDbContext<User, Role, string>
     {
         protected UserDbContext() { }
 
@@ -14,16 +21,90 @@ namespace Identity.Context
             Database.EnsureCreated();
         }
 
-        public virtual DbSet<User> Users { get; set; }
+        public override DbSet<User> Users { get; set; }
+        public override DbSet<Role> Roles { get; set; }
+        public override DbSet<IdentityUserRole<string>> UserRoles { get; set; }
+
+        private IDbContextTransaction _transaction;
+
+        public Task BeginTransactionAsync()
+        {
+            return Task.Run(async () =>
+            {
+                _transaction = await Database.BeginTransactionAsync();
+            });
+        }
+
+        public Task CommitAsync()
+        {
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    await SaveChangesAsync();
+                    await _transaction.CommitAsync();
+                }
+                finally
+                {
+                    await _transaction.DisposeAsync();
+                }
+            });
+        }
+
+        public Task RollbackAsync()
+        {
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    await _transaction.RollbackAsync();
+                }
+                finally
+                {
+                    await _transaction.DisposeAsync();
+                }
+            });
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new UserMap());
 
+            var noneRole = new Role()
+            {
+                Name = "None",
+                NormalizedName = "None".ToUpper()
+            };
+            var userRole = new Role()
+            {
+                Name = "User",
+                NormalizedName = "User".ToUpper()
+            };
+            var adminRole = new Role()
+            {
+                Name = "Admin",
+                NormalizedName = "Admin".ToUpper()
+            };
+            var managerRole = new Role()
+            {
+                Name = "Manager",
+                NormalizedName = "Manager".ToUpper()
+            };
+
+            builder.Entity<Role>()
+                .HasData(noneRole, userRole, adminRole, managerRole);
+
             string email = "seantpd@gmail.com";
             string username = "dev_master";
             string name = "Sean Ono Lennon Pessoa";
             User user = new User(name, username, email);
+
+            builder.Entity<IdentityUserRole<string>>()
+                .HasData(new IdentityUserRole<string>()
+                {
+                    RoleId = managerRole.Id,
+                    UserId = user.Id
+                });
 
             builder.Entity<User>()
                 .HasData(user);
@@ -35,12 +116,6 @@ namespace Identity.Context
         {
             options.EnableDetailedErrors(true);
             options.EnableSensitiveDataLogging(true);
-            /* options.UseNpgsql("Host=localhost; Port=5432; User ID=sean; Password=sean@123; Database=DDDProjectUser; Integrated Security=true; Pooling=true;", x =>
-            {
-                x.MigrationsAssembly("Api");
-                x.SetPostgresVersion(0, 1);
-                x.UseRelationalNulls(true);
-            }); */
 
             base.OnConfiguring(options);
         }

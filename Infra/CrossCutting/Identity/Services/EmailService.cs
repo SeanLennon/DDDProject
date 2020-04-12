@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Domain.Resources;
 using Microsoft.Extensions.Configuration;
 
 namespace Identity.Services
@@ -11,9 +10,7 @@ namespace Identity.Services
     {
         public static async Task<SmtpStatusCode> SendAsync(string email, string message, string subject, IConfiguration config)
         {
-            /* var config = new ConfigurationBuilder()
-                .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
-                .Build(); */
+            // EmailSettings settings = config.GetSection("EmailSettings").Get<EmailSettings>();
 
             using var client = new SmtpClient(config["EmailSettings:Server"])
             {

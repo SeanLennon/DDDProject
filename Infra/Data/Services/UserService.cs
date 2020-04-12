@@ -1,10 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Data.Context;
 using Data.Repositories;
 using Domain.Entities;
-using Domain.Extensions;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 
 namespace Data.Services
@@ -14,8 +15,8 @@ namespace Data.Services
         private IUserRepository _userRepository;
         private ITokenService _tokenService;
 
-        public UserService(UserManager<User> manager, IUserRepository userRepository, ITokenService tokenService)
-            : base(manager)
+        public UserService(UserManager<User> manager, AppDbContext context, IUserRepository userRepository, ITokenService tokenService)
+            : base(manager, context)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
@@ -26,7 +27,10 @@ namespace Data.Services
         {
             User user = await _userRepository.GetByEmailAsync(email);
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
-                return await _tokenService.GenerateToken(user);
+            {
+                Token token = await _tokenService.GenerateToken(user);
+                return token.AccessToken;
+            }
             return null;
         }
 

@@ -1,28 +1,10 @@
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using Api.Configuration;
-using Api.Extensions;
-using Api.Helpers;
-using Data.Context;
-using Identity.Context;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-// using Microsoft.AspNetCore.Localization.Routing;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 
 namespace Api
 {
@@ -35,6 +17,7 @@ namespace Api
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             if (env.IsDevelopment())
@@ -51,8 +34,8 @@ namespace Api
             services.AddDependencyConfig();
             services.AddIdentityConfig();
             services.AddApiVerisionConfig();
-            services.AddAuthorizationConfig();
             services.AddAuthenticationConfig(_configuration);
+            services.AddAuthorizationConfig();
             services.AddCorsConfig();
             services.AddGlobalizationConfig();
             services.AddControllers();

@@ -22,21 +22,24 @@ namespace Api.Configuration
                 x.ConstraintMap.Add("Content-Language", typeof(LanguageRouteConstraint));
             });
 
-            services.Configure<RequestLocalizationOptions>(x =>
+            services.Configure<RequestLocalizationOptions>(options =>
             {
                 var cultures = new List<CultureInfo>()
                 {
                     new CultureInfo("en-US"),
                     new CultureInfo("pt-BR")
                 };
-                x.DefaultRequestCulture = new RequestCulture("en-US", "en-us");
-                x.SupportedCultures = cultures;
-                x.SupportedUICultures = cultures;
-                x.RequestCultureProviders = new[]
+                options.DefaultRequestCulture = new RequestCulture("en-US", "en-us");
+                options.SupportedCultures = cultures;
+                options.SupportedUICultures = cultures;
+                options.RequestCultureProviders = new[]
                 {
                     new HeaderDataRequestCultureProvider()
+                    {
+                        Options = options
+                    }
                 };
-                x.SetDefaultCulture("en-US");
+                options.SetDefaultCulture("en-US");
             });
         }
     }

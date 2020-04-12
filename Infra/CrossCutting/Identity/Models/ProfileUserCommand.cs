@@ -5,6 +5,8 @@ namespace Identity.Models
 {
     public class ProfileUserCommand : ICommandResult
     {
+        public ProfileUserCommand(AuthenticatedUser user) => Email = user.Email;
+
         [EmailAddress, MaxLength(100)]
         public string Email { get; set; }
 

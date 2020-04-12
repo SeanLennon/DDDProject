@@ -12,6 +12,7 @@ using Identity.Models;
 using Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
 
 namespace Identity.Handlers
 {
@@ -82,7 +83,7 @@ namespace Identity.Handlers
                     return new CommandResult(false, Messages.USER_NOT_FOUND, null);
 
                 string token = await _service.ForgotPasswordAsync(user);
-                string message = string.Format("Clique no link para redefinir sua senha: <a href=\"https://localhost:5001/reset-password?email={0}&token={1}\">{1}</a><br><p>Caso não tenha sido você ignore esse E-mail.</p>", user.Email, token);
+                string message = string.Format("Clique no link para redefinir sua senha: <a href=\"https://localhost:5001/reset-password?email={0}&token={1}\">{1}</a><br><p>Caso não tenha sido você, ignore esse E-mail.</p>", user.Email, token);
                 SmtpStatusCode status = await EmailService.SendAsync(user.Email, message, "Reset Password", _config);
                 if (status == SmtpStatusCode.GeneralFailure)
                     return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);

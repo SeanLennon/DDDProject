@@ -14,7 +14,6 @@ namespace Api.Configuration
         public static void AddAuthenticationConfig(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
             AppSettings app = configuration.GetSection("AppSettings").Get<AppSettings>();
 
@@ -26,17 +25,22 @@ namespace Api.Configuration
             })
             .AddJwtBearer(x =>
             {
-                x.RequireHttpsMetadata = false;
+                x.RequireHttpsMetadata = true;
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(app.Secret)),
+
                     ValidateIssuer = false,
+                    ValidIssuer = app.Issuer,
+
                     ValidateAudience = false,
+                    ValidAudience = app.Audience,
+
                     ClockSkew = TimeSpan.Zero,
                     ValidateLifetime = true,
-                    RequireExpirationTime = true
+                    RequireExpirationTime = true,
                 };
             });
         }
