@@ -1,6 +1,9 @@
+using System.IO.Compression;
+using System.Linq;
 using Api.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +33,17 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml+json" });
+            })
+            .Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
+
             services.AddDatabaseConfig(_configuration);
             services.AddDependencyConfig();
             services.AddIdentityConfig();
@@ -39,6 +53,7 @@ namespace Api
             services.AddCorsConfig();
             services.AddGlobalizationConfig();
             services.AddControllers();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +65,7 @@ namespace Api
             }
 
             app.UseHttpsRedirection();
+            app.UseResponseCompression();
             app.UseApiVersioning();
 
             /*  List<CultureInfo> cultures = new List<CultureInfo>()
