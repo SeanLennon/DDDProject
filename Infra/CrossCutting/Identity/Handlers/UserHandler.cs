@@ -7,12 +7,11 @@ using Domain.Interfaces.Commands;
 using Domain.Interfaces.Handlers;
 using Domain.Interfaces.Services;
 using Domain.Resources;
-using Identity.Commands.Users;
+using Identity.Commands;
 using Identity.Models;
 using Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Localization;
 
 namespace Identity.Handlers
 {
