@@ -11,9 +11,34 @@ namespace Identity.Mappings
         {
             builder.ToTable("AspNetUsers");
 
+            builder.Property(x => x.Id)
+                .HasColumnType("text")
+                .HasMaxLength(36)
+                .IsRequired();
+
             builder.HasIndex(x => x.FullName).IsUnique().HasName("FullNameIndex");
             builder.HasIndex(x => x.FirstName).HasName("FirstNameIndex");
             builder.HasIndex(x => x.LastName).HasName("LastNameIndex");
+
+            builder.Property(x => x.UserName)
+                .HasColumnType("text")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.NormalizedUserName)
+                .HasColumnType("text")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.Email)
+                .HasColumnType("text")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.NormalizedEmail)
+                .HasColumnType("text")
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder.Property(x => x.FullName)
                 .HasColumnType("text")
