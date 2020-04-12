@@ -20,6 +20,7 @@ namespace IoC.NativeDependency
             services.AddTransient<AppDbContext>();
             services.AddScoped<UserManager<User>>();
             services.AddTransient<UserHandler>();
+            services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserRepository, UserRepository>();
         }

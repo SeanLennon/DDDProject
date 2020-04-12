@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Api.Extensions;
@@ -8,16 +9,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Configuration
 {
-    public static class CultureConfig
+    public static class GlobalizationConfig
     {
-        public static void AddLocalizationConfig(this IServiceCollection services)
+        public static void AddGlobalizationConfig(this IServiceCollection services)
         {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
             services.AddLocalization(x => x.ResourcesPath = "Resources");
-            // services.AddLocalization();
 
             services.Configure<RouteOptions>(x =>
             {
-                x.ConstraintMap.Add("Culture", typeof(LanguageRouteConstraint));
+                x.ConstraintMap.Add("Content-Language", typeof(LanguageRouteConstraint));
             });
 
             services.Configure<RequestLocalizationOptions>(x =>

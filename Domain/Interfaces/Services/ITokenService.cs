@@ -1,10 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Domain.Entities;
 
 namespace Domain.Interfaces.Services
 {
     public interface ITokenService
     {
-        User GenerateToken(User user);
+        Task<String> GenerateToken(User user);
     }
 }

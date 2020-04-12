@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Api.Configuration;
 using Api.Extensions;
+using Api.Helpers;
 using Data.Context;
 using Identity.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,74 +47,14 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // DatabaseSettings database = Configuration.GetSection("AppConnectionString").Get<DatabaseSettings>();
-            var conn = new NpgsqlConnectionStringBuilder(_configuration.GetConnectionString("AppConnectionString"))
-            {
-                Database = _configuration["DatabaseSettings:Name"],
-                Username = _configuration["DatabaseSettings:Username"],
-                Password = _configuration["DatabaseSettings:Password"]
-            }.ConnectionString;
-
-            services.AddDbContext<UserDbContext>(x =>
-                x.UseNpgsql(conn, x =>
-                    x.MigrationsAssembly("Api").SetPostgresVersion(0, 1)));
-
-            services.AddDbContext<AppDbContext>(x =>
-                x.UseNpgsql(conn, x =>
-                    x.MigrationsAssembly("Api").SetPostgresVersion(0, 1)));
-
+            services.AddDatabaseConfig(_configuration);
             services.AddDependencyConfig();
             services.AddIdentityConfig();
-            services.AddControllers();
-            // services.AddDatabaseConfig();
             services.AddApiVerisionConfig();
-            // services.AddLocalizationConfig();
-
-            services.AddCors(x =>
-            {
-                x.AddPolicy("Default", c =>
-                {
-                    c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-                });
-            });
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = TokenOptions.DefaultProvider;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("de161a0d-984f-4249-9705-5bdc6e02c548")),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateLifetime = true,
-                    RequireExpirationTime = true
-                };
-            });
-
-            services.AddAuthorization(x =>
-            {
-                x.AddPolicy("Default", p =>
-                {
-                    p.RequireRole("User");
-                    p.RequireAssertion(c => c.User.IsInRole("User"));
-                });
-            });
-
-            services.AddLocalization(x => x.ResourcesPath = "Resources");
-            services.Configure<RouteOptions>(x =>
-            {
-                x.ConstraintMap.Add("Content-Language", typeof(LanguageRouteConstraint));
-            });
-
+            services.AddAuthorizationConfig();
+            services.AddAuthenticationConfig(_configuration);
+            services.AddCorsConfig();
+            services.AddGlobalizationConfig();
             services.AddControllers();
         }
 
@@ -128,30 +69,30 @@ namespace Api
             app.UseHttpsRedirection();
             app.UseApiVersioning();
 
-            List<CultureInfo> cultures = new List<CultureInfo>()
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("pt-BR")
-            };
+            /*  List<CultureInfo> cultures = new List<CultureInfo>()
+             {
+                 new CultureInfo("en-US"),
+                 new CultureInfo("pt-BR")
+             };
 
-            var options = new RequestLocalizationOptions()
-            {
-                DefaultRequestCulture = new RequestCulture("en-US"),
-                SupportedCultures = cultures,
-                SupportedUICultures = cultures
-            };
+             var options = new RequestLocalizationOptions()
+             {
+                 DefaultRequestCulture = new RequestCulture("en-US"),
+                 SupportedCultures = cultures,
+                 SupportedUICultures = cultures
+             };
 
-            options.RequestCultureProviders = new []
-            {
-                new HeaderDataRequestCultureProvider()
-                {
-                    Options = options
-                }
-            };
+             options.RequestCultureProviders = new []
+             {
+                 new HeaderDataRequestCultureProvider()
+                 {
+                     Options = options
+                 }
+             };
 
+             app.UseRequestLocalization(options); */
+            RequestLocalizationOptions options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
             app.UseRequestLocalization(options);
-
-            // app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
             app.UseRouting();
             app.UseAuthentication();

@@ -5,6 +5,6 @@ namespace Api.Helpers
         public string ApplicationName { get; set; }
         public string Author { get; set; }
         public string Description { get; set; }
-        public string Secret { get; private set; }
+        public string Secret { get; set; }
     }
 }

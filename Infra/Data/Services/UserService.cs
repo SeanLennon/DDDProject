@@ -12,16 +12,21 @@ namespace Data.Services
     public class UserService : UserRepository, IUserService
     {
         private IUserRepository _userRepository;
+        private ITokenService _tokenService;
 
-        public UserService(UserManager<User> manager, IUserRepository userRepository)
-            : base(manager) => _userRepository = userRepository;
+        public UserService(UserManager<User> manager, IUserRepository userRepository, ITokenService tokenService)
+            : base(manager)
+        {
+            _userRepository = userRepository;
+            _tokenService = tokenService;
+        }
 
 
         public async Task<String> AuthenticateAsync(string email, string password)
         {
             User user = await _userRepository.GetByEmailAsync(email);
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
-                return user.Jwt();
+                return await _tokenService.GenerateToken(user);
             return null;
         }
 
