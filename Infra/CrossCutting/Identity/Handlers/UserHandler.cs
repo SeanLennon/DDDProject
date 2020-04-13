@@ -68,20 +68,21 @@ namespace Identity.Handlers
         {
             try
             {
-                _logger?.LogInfo("Autenticando usuário.");
-                string token = await _service.AuthenticateAsync(command.Email, command.Password);
+                _logger?.Info("Autenticando usuário.");
+                string token = await _service.AuthenticateAsync(command.Email = null, command.Password);
                 if (token == null)
                 {
-                    _logger?.LogWarn("Usuário não autenticado.");
+                    _logger?.Warn("Usuário não autenticado.");
                     return new CommandResult(false, Messages.USER_AUTHENTICATE_FAILED, null);
                 }
-                _logger?.LogInfo("Usuário autenticado com sucesso.");
+                _logger?.Info("Usuário autenticado com sucesso.");
                 return new CommandResult(true, Messages.USER_AUTHENTICATE_SUCCESS, token);
             }
             catch (Exception ex)
             {
-                _logger?.LogError($"{ex.GetHashCode()} : {ex.Message}");
-                return new CommandResult(false, "Internal Server Error", null);
+                _logger?.Error(ex.Message.ToLower());
+                // return new CommandResult(false, "Internal Server Error", null);
+                throw ex;
             }
         }
 
