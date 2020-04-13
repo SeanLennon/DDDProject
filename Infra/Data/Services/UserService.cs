@@ -30,31 +30,31 @@ namespace Data.Services
 
         public async Task<String> AuthenticateAsync(string email, string password)
         {
-            _logger?.LogInfo("Obtendo o usuário.");
+            _logger?.Info("Obtendo o usuário.");
             User user = await _userRepository.GetByEmailAsync(email);
             if (user == null)
             {
-                _logger?.LogWarn("Usuário não encontrado na base de dados.");
+                _logger?.Warn("Usuário não encontrado na base de dados.");
                 return null;
             }
-            _logger?.LogInfo("Usuário foi encontrado.");
+            _logger?.Info("Usuário foi encontrado.");
 
-            _logger?.LogInfo("validando a senha.");
+            _logger?.Info("validando a senha.");
             if (await _userManager.CheckPasswordAsync(user, password))
             {
-                _logger?.LogInfo("Senha é válida.");
-                _logger?.LogInfo("Gerando Jwt Token.");
+                _logger?.Info("Senha é válida.");
+                _logger?.Info("Gerando Jwt Token.");
                 Token token = await _tokenService.GenerateToken(user);
                 if(token != null)
                 {
-                    _logger?.LogInfo("Token gerado com sucesso.");
-                    _logger?.LogInfo("Retornando token.");
+                    _logger?.Info("Token gerado com sucesso.");
+                    _logger?.Info("Retornando token.");
                     return token.AccessToken;
                 }
-                _logger?.LogInfo("Falha ao gerar token.");
+                _logger?.Info("Falha ao gerar token.");
                 return null;
             }
-            _logger?.LogWarn("Senha não é válida para esse usuário.");
+            _logger?.Warn("Senha não é válida para esse usuário.");
             return null;
         }
 
