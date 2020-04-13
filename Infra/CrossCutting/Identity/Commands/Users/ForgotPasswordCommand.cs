@@ -1,6 +1,6 @@
 using Domain.Interfaces.Commands;
 
-namespace Identity.Models
+namespace Identity.Commands.Users
 {
     public class ForgotPasswordCommand : ICommandResult
     {

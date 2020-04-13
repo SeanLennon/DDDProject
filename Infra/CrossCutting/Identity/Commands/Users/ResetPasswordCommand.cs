@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Domain.Interfaces.Commands;
+using Identity.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Identity.Models
+namespace Identity.Commands.Users
 {
     public class ResetPasswordCommand : ICommandResult
     {

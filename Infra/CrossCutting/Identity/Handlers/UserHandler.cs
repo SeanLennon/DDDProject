@@ -9,12 +9,11 @@ using Domain.Interfaces.Managers;
 using Domain.Interfaces.Services;
 using Domain.Resources;
 using Identity.Commands;
-using Identity.Models;
+using Identity.Commands.Users;
 using Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Identity.Handlers
 {
@@ -69,7 +68,7 @@ namespace Identity.Handlers
             try
             {
                 _logger?.Info("Autenticando usuário.");
-                string token = await _service.AuthenticateAsync(command.Email = null, command.Password);
+                string token = await _service.AuthenticateAsync(command.Email, command.Password);
                 if (token == null)
                 {
                     _logger?.Warn("Usuário não autenticado.");
