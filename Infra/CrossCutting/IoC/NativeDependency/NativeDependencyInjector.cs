@@ -2,16 +2,16 @@ using Data.Context;
 using Data.Repositories;
 using Data.Services;
 using Domain.Entities;
+using Domain.Interfaces.Managers;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Identity.Commands.Roles;
 using Identity.Context;
 using Identity.Handlers;
 using Identity.Models;
+using Identity.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 
 namespace IoC.NativeDependency
 {
@@ -19,6 +19,8 @@ namespace IoC.NativeDependency
     {
         public static void Inject(IServiceCollection services)
         {
+            services.AddSingleton<ILoggerManager, LoggerManager>();
+
             services.AddTransient<UserDbContext>();
             services.AddTransient<AppDbContext>();
 

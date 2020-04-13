@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Extensions;
 using Domain.Interfaces.Commands;
 using Domain.Interfaces.Handlers;
+using Domain.Interfaces.Managers;
 using Domain.Interfaces.Services;
 using Domain.Resources;
 using Identity.Commands;
@@ -12,6 +13,8 @@ using Identity.Models;
 using Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Handlers
 {
@@ -26,11 +29,14 @@ namespace Identity.Handlers
     {
         private IUserService _service;
         private IConfiguration _config;
+        private ILoggerManager _logger;
 
-        public UserHandler(IUserService service, IConfiguration config)
+        public UserHandler(IUserService service, IConfiguration config, ILoggerManager logger, IHostEnvironment env)
         {
             _service = service;
             _config = config;
+            // if (env.IsProduction())
+            _logger = logger;
         }
 
 
@@ -62,14 +68,20 @@ namespace Identity.Handlers
         {
             try
             {
+                _logger?.LogInfo("Autenticando usuário.");
                 string token = await _service.AuthenticateAsync(command.Email, command.Password);
                 if (token == null)
+                {
+                    _logger?.LogWarn("Usuário não autenticado.");
                     return new CommandResult(false, Messages.USER_AUTHENTICATE_FAILED, null);
+                }
+                _logger?.LogInfo("Usuário autenticado com sucesso.");
                 return new CommandResult(true, Messages.USER_AUTHENTICATE_SUCCESS, token);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger?.LogError($"{ex.GetHashCode()} : {ex.Message}");
+                return new CommandResult(false, "Internal Server Error", null);
             }
         }
 

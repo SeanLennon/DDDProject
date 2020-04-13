@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
@@ -33,6 +35,7 @@ namespace Api.Controllers
                 result.Message = _localizer["USER_AUTHENTICATE_SUCCESS"].Value;
                 return Ok(result);
             }
+
             result.Message = _localizer["USER_AUTHENTICATE_FAILED"].Value;
             return BadRequest(result);
         }
