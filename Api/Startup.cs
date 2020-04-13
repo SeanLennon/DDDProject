@@ -1,3 +1,4 @@
+using System;
 using System.IO.Compression;
 using System.Linq;
 using Api.Configuration;
@@ -33,6 +34,12 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHsts(options =>
+            {
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
+
             services.AddResponseCompression(options =>
             {
                 options.EnableForHttps = true;
@@ -42,6 +49,11 @@ namespace Api
             .Configure<GzipCompressionProviderOptions>(options =>
             {
                 options.Level = CompressionLevel.Fastest;
+            });
+
+            services.AddAntiforgery(options =>
+            {
+                options.SuppressXFrameOptionsHeader = false;
             });
 
             services.AddDatabaseConfig(_configuration);
@@ -64,9 +76,29 @@ namespace Api
                 app.UseDeveloperExceptionPage();
             }
 
+            if (env.IsProduction())
+            {
+                app.UseHsts();
+            }
+
+
             app.UseHttpsRedirection();
             app.UseResponseCompression();
             app.UseApiVersioning();
+
+            app.Use(async (context, next) =>
+            {
+                /* if (!context.Response.Headers.ContainsKey("Header-Name"))
+                {
+                } */
+                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+                context.Response.Headers.Add("X-Permitted-Cross-Domain-Policies", "none");
+                context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
+                context.Response.Headers.Add("X-Frame-Options", "DENY");
+                await next();
+            });
 
             /*  List<CultureInfo> cultures = new List<CultureInfo>()
              {
