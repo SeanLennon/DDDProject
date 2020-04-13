@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Api.Builders;
 using Api.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,28 +38,8 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHsts(options =>
-            {
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(365);
-            });
-
-            services.AddResponseCompression(options =>
-            {
-                options.EnableForHttps = true;
-                options.Providers.Add<GzipCompressionProvider>();
-                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml+json" });
-            })
-            .Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Fastest;
-            });
-
-            services.AddAntiforgery(options =>
-            {
-                options.SuppressXFrameOptionsHeader = false;
-            });
-
+            services.AddHstsConfig();
+            services.AddResponseCompressionConfig();
             services.AddDatabaseConfig(_configuration);
             services.AddDependencyConfig();
             services.AddIdentityConfig();
@@ -88,16 +69,7 @@ namespace Api
             app.UseResponseCompression();
             app.UseApiVersioning();
 
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-                context.Response.Headers.Add("X-Permitted-Cross-Domain-Policies", "none");
-                context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
-                context.Response.Headers.Add("X-Frame-Options", "DENY");
-                await next();
-            });
+            app.UseHeadersBuilder();
 
             /*  List<CultureInfo> cultures = new List<CultureInfo>()
              {
