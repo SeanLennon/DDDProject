@@ -48,8 +48,8 @@ namespace Identity.Handlers
                 IdentityResult result = await _service.InsertAsync(user, command.Password);
                 if (result.Succeeded)
                 {
-                    string message = string.Format("<strong><b>Wellcome {0}! Registered successfully.</b></strong>", command.FullName);
-                    SmtpStatusCode status = await EmailService.SendAsync(command.Email, message, $"Wellcome", _config);
+                    string message = EmailService.CreateMessageWellcome(user.FirstName);
+                    SmtpStatusCode status = await EmailService.SendAsync(command.Email, message, "Wellcome", _config);
                     if (status == SmtpStatusCode.GeneralFailure)
                         return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 
@@ -94,7 +94,7 @@ namespace Identity.Handlers
                     return new CommandResult(false, Messages.USER_NOT_FOUND, null);
 
                 string token = await _service.ForgotPasswordAsync(user);
-                string message = string.Format("Clique no link para redefinir sua senha: <a href=\"https://localhost:5001/reset-password?email={0}&token={1}\">{1}</a><br><p>Caso não tenha sido você, ignore esse E-mail.</p>", user.Email, token);
+                string message = EmailService.CreateMessageForgotPassword(user.Email, token);
                 SmtpStatusCode status = await EmailService.SendAsync(user.Email, message, "Reset Password", _config);
                 if (status == SmtpStatusCode.GeneralFailure)
                     return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
