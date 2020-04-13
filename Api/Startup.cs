@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Api.Configuration;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using NLog;
 
 namespace Api
 {
@@ -29,6 +31,7 @@ namespace Api
                 builder.AddUserSecrets<Startup>();
             }
             _configuration = builder.Build();
+            LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -81,16 +84,12 @@ namespace Api
                 app.UseHsts();
             }
 
-
             app.UseHttpsRedirection();
             app.UseResponseCompression();
             app.UseApiVersioning();
 
             app.Use(async (context, next) =>
             {
-                /* if (!context.Response.Headers.ContainsKey("Header-Name"))
-                {
-                } */
                 context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 context.Response.Headers.Add("Referrer-Policy", "no-referrer");
