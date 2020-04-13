@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Interfaces.Managers;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Identity.Commands.Users;
 using Identity.Context;
 using Identity.Handlers;
 using Identity.Models;

@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Interfaces.Commands;
+using Identity.Models;
 
-namespace Identity.Models
+namespace Identity.Commands.Users
 {
     public class ChangePasswordCommand : ICommandResult
     {
