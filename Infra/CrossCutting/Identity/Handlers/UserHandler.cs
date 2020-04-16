@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Extensions;
@@ -12,9 +11,7 @@ using Domain.Interfaces.Services;
 using Domain.Resources;
 using Identity.Commands;
 using Identity.Commands.Users;
-using Identity.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Identity.Handlers
@@ -29,20 +26,13 @@ namespace Identity.Handlers
         IHandler<ChangeNameCommand>
     {
         private IUserService _service;
-        private IConfiguration _config;
         private ILoggerManager _logger;
-        private RoleManager<IdentityRole> _roleManager;
         private UserManager<User> _userManager;
 
-        private List<IdentityError> _errors;
-
-        public UserHandler(IUserService service, UserManager<User> userManager, IConfiguration config, ILoggerManager logger, IHostEnvironment env, RoleManager<IdentityRole> roleManager)
+        public UserHandler(IUserService service, UserManager<User> userManager, ILoggerManager logger)
         {
             _service = service;
-            _config = config;
-            // if (env.IsProduction())
             _logger = logger;
-            _roleManager = roleManager;
             _userManager = userManager;
         }
 
@@ -50,7 +40,6 @@ namespace Identity.Handlers
 
         public async Task<ICommandResult> Handler(RegisterUserCommand command)
         {
-            // List<IdentityError> errors = new List<IdentityError>();
             try
             {
                 User user = new User(command.FullName, command.UserName, command.Email);
@@ -58,12 +47,31 @@ namespace Identity.Handlers
                 if (result.Succeeded)
                 {
                     await _userManager.AddClaimsAsync(user, user.Claims);
-                    await _userManager.AddToRolesAsync(user, command.Roles.Select(x => x.Name));
+                    await _userManager.AddToRolesAsync(user, command.Roles);
 
-                    string message = EmailService.CreateWellcomeMessage(user.FirstName);
+                    string message = await _service.CreateWellcomeMessage(user.FirstName);
 
                     // TODO: Refatorar para enviar email à uma fila em redis ou rabbitmq
-                    SmtpStatusCode status = await EmailService.SendAsync(command.Email, message, subject: "Wellcome", config: _config);
+                    /* var factory = new ConnectionFactory() { HostName = "localhost" };
+                    using var connection = factory.CreateConnection();
+                    using (var channel = connection.CreateModel())
+                    {
+                        channel.QueueDeclare(queue: "email",
+                                             durable: false,
+                                             exclusive: false,
+                                             autoDelete: false,
+                                             arguments: null);
+                        var body = Encoding.UTF8.GetBytes(message);
+
+                        channel.BasicPublish(exchange: "",
+                                             routingKey: "email",
+                                             basicProperties: null,
+                                             body: body);
+                        _logger.Debug(message);
+                    }; */
+                    
+
+                    SmtpStatusCode status = await _service.SendAsync(user.Email, message, subject: "Bem-vindo!");
                     if (status == SmtpStatusCode.GeneralFailure)
                         return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 
@@ -112,8 +120,8 @@ namespace Identity.Handlers
                     return new CommandResult(false, Messages.USER_NOT_FOUND, null);
 
                 string token = await _service.ForgotPasswordAsync(user);
-                string message = EmailService.CreateMessageForgotPassword(user.Email, token);
-                SmtpStatusCode status = await EmailService.SendAsync(user.Email, message, "Reset Password", _config);
+                string message = await _service.CreateMessageForgotPassword(user.Email, token);
+                SmtpStatusCode status = await _service.SendAsync(user.Email, message, "Reset Password");
                 if (status == SmtpStatusCode.GeneralFailure)
                     return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 

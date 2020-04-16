@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Interfaces.Services
 {
-    public interface IUserService : IUserRepository
+    public interface IUserService : IUserRepository, IEmailSender
     {
         Task<String> AuthenticateAsync(string email, string password);
         Task<String> ForgotPasswordAsync(User user);

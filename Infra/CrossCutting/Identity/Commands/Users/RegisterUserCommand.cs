@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Domain.Interfaces.Commands;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,7 +22,7 @@ namespace Identity.Commands.Users
 
         [Required, Compare("Password"), MaxLength(100)]
         public string ConfirmPassword { get; set; }
-        public List<IdentityRole<string>> Roles { get; set; }
+        public IList<string> Roles { get; set; }
 
         public bool Succeeded { get; set; }
         public string Message { get; set; }

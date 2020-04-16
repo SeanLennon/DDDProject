@@ -23,6 +23,8 @@ namespace IoC.NativeDependency
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
 
+            services.AddScoped<IEmailSender, Data.Services.EmailService>();
+
             services.AddTransient<UserDbContext>();
             services.AddTransient<AppDbContext>();
 

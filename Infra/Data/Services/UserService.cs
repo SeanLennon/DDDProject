@@ -1,43 +1,47 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Context;
+using Data.Helpers;
 using Data.Repositories;
 using Domain.Entities;
 using Domain.Interfaces.Managers;
-using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Data.Services
 {
     public class UserService : UserRepository, IUserService
     {
-        private IUserRepository _userRepository;
+        private readonly EmailSettings _settings;
         private ITokenService _tokenService;
         private ILoggerManager _logger;
-        private RoleManager<IdentityRole> _roleManager;
 
-        public UserService(UserManager<User> manager, AppDbContext context, IUserRepository userRepository, ITokenService tokenService, RoleManager<IdentityRole> roleManager, ILoggerManager logger, IHostEnvironment env)
-            : base(manager, context)
+        public UserService(
+            UserManager<User> manager,
+            AppDbContext context,
+            ITokenService tokenService,
+            ILoggerManager logger,
+            IConfiguration config
+        ) : base(manager, context)
         {
-            _userRepository = userRepository;
             _tokenService = tokenService;
-            // if (env.IsProduction())
             _logger = logger;
-            _roleManager = roleManager;
+            _settings = config.GetSection("EmailSettings").Get<EmailSettings>();
         }
 
 
         public async Task<String> AuthenticateAsync(string email, string password)
         {
             _logger?.Info("Obtendo o usuário.");
-            User user = await _userRepository.GetByEmailAsync(email);
+            User user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 _logger?.Warn("Usuário não encontrado na base de dados.");
@@ -83,7 +87,49 @@ namespace Data.Services
         public async Task<IdentityResult> ChangeNameAsync(User user, string fullName)
         {
             user.ChangeName(fullName);
-            return await _userRepository.UpdateAsync(user);
+            return await _userManager.UpdateAsync(user);
         }
+
+
+        public Task<SmtpStatusCode> SendAsync(string email, string message, string subject)
+        {
+            return Task<SmtpStatusCode>.Run(async () =>
+            {
+                using var smtp = new SmtpClient(_settings.Server)
+                {
+                    Port = _settings.Port,
+                    Credentials = new NetworkCredential(_settings.From, _settings.Password),
+                    EnableSsl = true
+                };
+
+                using var mail = new MailMessage()
+                {
+                    From = new MailAddress(email),
+                    Subject = subject,
+                    Body = message,
+                    IsBodyHtml = true,
+                };
+                mail.To.Add(email);
+                try
+                {
+                    await smtp.SendMailAsync(mail);
+                    return await Task.FromResult(SmtpStatusCode.Ok);
+                }
+                catch (SmtpException)
+                {
+                    return await Task.FromResult(SmtpStatusCode.GeneralFailure);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            });
+        }
+
+        public Task<String> CreateMessageForgotPassword(string email, string token)
+            => Task<String>.Run(() => string.Format("Clique no link para redefinir sua senha: <a href=\"https://api.localhost:5001/reset-password?email={0}&token={1}\">{1}</a><br><p>Caso não tenha sido você, ignore esse E-mail.</p>", email, token));
+
+        public Task<String> CreateWellcomeMessage(string name)
+            => Task<String>.Run(() => String.Format("Wellcome {0}! <br> <div style=\"background-color:silver;\">Have you been registered successfully.</br>", name));
     }
 }
