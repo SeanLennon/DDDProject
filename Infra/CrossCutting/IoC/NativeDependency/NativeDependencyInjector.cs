@@ -10,6 +10,7 @@ using Identity.Context;
 using Identity.Handlers;
 using Identity.Models;
 using Identity.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ namespace IoC.NativeDependency
             services.AddTransient<AppDbContext>();
 
             services.AddScoped<UserManager<User>>();
-            services.AddScoped<RoleManager<Role>>();
+            services.AddScoped<RoleManager<IdentityRole>>();
 
             services.AddTransient<UserHandler>();
             services.AddTransient<RoleHandler>();

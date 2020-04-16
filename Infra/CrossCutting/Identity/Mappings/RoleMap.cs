@@ -1,14 +1,16 @@
 using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Identity.Mappings
 {
-    public class RoleMap : IEntityTypeConfiguration<Role>
+    public class RoleMap : IEntityTypeConfiguration<IdentityRole>
     {
-        public void Configure(EntityTypeBuilder<Role> builder)
+        public void Configure(EntityTypeBuilder<IdentityRole> builder)
         {
             builder.ToTable("AspNetRoles");
+
             builder.HasKey(x => x.Id);
 
             builder.HasIndex(x => x.Name)
@@ -16,7 +18,6 @@ namespace Identity.Mappings
 
             builder.HasIndex(x => x.NormalizedName)
                 .HasName("NormalizedNameIndex");
-
 
             builder.Property(x => x.Id)
                 .HasColumnType("text")

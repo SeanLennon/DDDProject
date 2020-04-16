@@ -1,5 +1,3 @@
-using Data.Mappings;
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Context
@@ -15,16 +13,6 @@ namespace Data.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfiguration(new UserMap());
-
-            string email = "seantpd@gmail.com";
-            string username = "dev_master";
-            string name = "Sean Ono Lennon Pessoa";
-            User user = new User(name, username, email);
-
-            builder.Entity<User>()
-                .HasData(user);
-
             base.OnModelCreating(builder);
         }
 

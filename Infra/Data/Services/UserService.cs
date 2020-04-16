@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Context;
 using Data.Repositories;
@@ -8,6 +11,7 @@ using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Hosting;
 
 namespace Data.Services
@@ -17,14 +21,16 @@ namespace Data.Services
         private IUserRepository _userRepository;
         private ITokenService _tokenService;
         private ILoggerManager _logger;
+        private RoleManager<IdentityRole> _roleManager;
 
-        public UserService(UserManager<User> manager, AppDbContext context, IUserRepository userRepository, ITokenService tokenService, ILoggerManager logger, IHostEnvironment env)
+        public UserService(UserManager<User> manager, AppDbContext context, IUserRepository userRepository, ITokenService tokenService, RoleManager<IdentityRole> roleManager, ILoggerManager logger, IHostEnvironment env)
             : base(manager, context)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             // if (env.IsProduction())
-                _logger = logger;
+            _logger = logger;
+            _roleManager = roleManager;
         }
 
 
@@ -44,8 +50,14 @@ namespace Data.Services
             {
                 _logger?.Info("Senha é válida.");
                 _logger?.Info("Gerando Jwt Token.");
+
+                IList<string> roles = await _userManager.GetRolesAsync(user);
+                IList<Claim> claims = await _userManager.GetClaimsAsync(user);
+                claims.Add(new Claim(ClaimTypes.Role, roles.Join(", ")));
+                user.AddClaims(claims);
+
                 Token token = await _tokenService.GenerateToken(user);
-                if(token != null)
+                if (token != null)
                 {
                     _logger?.Info("Token gerado com sucesso.");
                     _logger?.Info("Retornando token.");

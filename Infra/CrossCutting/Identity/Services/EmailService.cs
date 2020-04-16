@@ -45,7 +45,7 @@ namespace Identity.Services
         public static String CreateMessageForgotPassword(string email, string token)
             => string.Format("Clique no link para redefinir sua senha: <a href=\"https://api.localhost:5001/reset-password?email={0}&token={1}\">{1}</a><br><p>Caso não tenha sido você, ignore esse E-mail.</p>", email, token);
 
-        public static String CreateMessageWellcome(string name)
-            => String.Format("Wellcome {0}! <br> Have you been registered successfully.", name);
+        public static String CreateWellcomeMessage(string name)
+            => String.Format("Wellcome {0}! <br> <div style=\"background-color:silver;\">Have you been registered successfully.</br>", name);
     }
 }

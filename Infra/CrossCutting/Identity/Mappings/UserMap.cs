@@ -1,5 +1,4 @@
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,7 +15,7 @@ namespace Identity.Mappings
                 .HasMaxLength(36)
                 .IsRequired();
 
-            builder.HasIndex(x => x.FullName).IsUnique().HasName("FullNameIndex");
+            builder.HasIndex(x => x.FullName).HasName("FullNameIndex");
             builder.HasIndex(x => x.FirstName).HasName("FirstNameIndex");
             builder.HasIndex(x => x.LastName).HasName("LastNameIndex");
 

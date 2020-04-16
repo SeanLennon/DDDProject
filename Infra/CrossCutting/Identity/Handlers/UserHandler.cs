@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Domain.Entities;
@@ -29,33 +31,49 @@ namespace Identity.Handlers
         private IUserService _service;
         private IConfiguration _config;
         private ILoggerManager _logger;
+        private RoleManager<IdentityRole> _roleManager;
+        private UserManager<User> _userManager;
 
-        public UserHandler(IUserService service, IConfiguration config, ILoggerManager logger, IHostEnvironment env)
+        private List<IdentityError> _errors;
+
+        public UserHandler(IUserService service, UserManager<User> userManager, IConfiguration config, ILoggerManager logger, IHostEnvironment env, RoleManager<IdentityRole> roleManager)
         {
             _service = service;
             _config = config;
             // if (env.IsProduction())
             _logger = logger;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
 
 
         public async Task<ICommandResult> Handler(RegisterUserCommand command)
         {
+            // List<IdentityError> errors = new List<IdentityError>();
             try
             {
                 User user = new User(command.FullName, command.UserName, command.Email);
                 IdentityResult result = await _service.InsertAsync(user, command.Password);
                 if (result.Succeeded)
                 {
-                    string message = EmailService.CreateMessageWellcome(user.FirstName);
-                    SmtpStatusCode status = await EmailService.SendAsync(command.Email, message, "Wellcome", _config);
+                    await _userManager.AddClaimsAsync(user, user.Claims);
+                    await _userManager.AddToRolesAsync(user, command.Roles.Select(x => x.Name));
+
+                    string message = EmailService.CreateWellcomeMessage(user.FirstName);
+
+                    // TODO: Refatorar para enviar email à uma fila em redis ou rabbitmq
+                    SmtpStatusCode status = await EmailService.SendAsync(command.Email, message, subject: "Wellcome", config: _config);
                     if (status == SmtpStatusCode.GeneralFailure)
                         return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 
                     return new CommandResult(true, Messages.USER_REGISTER_SUCCESS, user.Response());
                 }
                 return new CommandResult(false, Messages.USER_REGISTER_FAILED, result.Errors);
+            }
+            catch (SmtpException ex)
+            {
+                throw new SmtpException(ex.Message);
             }
             catch (Exception ex)
             {

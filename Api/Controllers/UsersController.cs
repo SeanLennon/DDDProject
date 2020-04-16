@@ -7,7 +7,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Api.Controllers
 {
-    [Authorize(Policy = "Default"), Route("users"), ApiVersion("1.0"), ApiController]
+    [Authorize, Route("users"), ApiVersion("1.0"), ApiController]
     public class UsersController : ControllerBase
     {
         private UserHandler _handler;
@@ -21,6 +21,7 @@ namespace Api.Controllers
 
 
         // GET: https://api.localhost:5001/users/authenticate
+        // [Authorize(Policy = "NoneOnly")]
         [AllowAnonymous]
         [HttpGet, Route("authenticate")]
         public async Task<IActionResult> Authenticate([FromForm]AuthenticateUserCommand command)
@@ -73,7 +74,7 @@ namespace Api.Controllers
 
 
         // PATCH: https://api.localhost:5001/users/change-password
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "UserOnly")]
         [HttpPatch, Route("change-password")]
         public async Task<IActionResult> ChangePassword([FromForm]ChangePasswordCommand command)
         {
@@ -92,7 +93,7 @@ namespace Api.Controllers
         // POST: https://api.localhost:5001/users
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Register([FromForm]RegisterUserCommand command)
+        public async Task<IActionResult> Register([FromBody]RegisterUserCommand command)
         {
             var result = await _handler.Handler(command);
             if (result.Succeeded)
@@ -107,7 +108,7 @@ namespace Api.Controllers
 
 
         // GET: https://api.localhost:5001/users/profile
-        [Authorize(Roles = "User")]
+        [Authorize(Policy = "UserOnly")]
         [HttpGet, Route("profile")]
         public async Task<IActionResult> Profile([FromServices]ProfileUserCommand command)
         {
@@ -124,7 +125,7 @@ namespace Api.Controllers
 
 
         // PATCH: https://api.localhost:5001/users/change-name
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "UserOnly")]
         [HttpPatch, Route("change-name")]
         public async Task<IActionResult> ChangeName([FromForm]ChangeNameCommand command)
         {

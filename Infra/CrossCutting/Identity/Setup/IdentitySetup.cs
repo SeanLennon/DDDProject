@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Domain.Entities;
 using Identity.Context;
 using Microsoft.AspNetCore.Identity;
@@ -17,8 +18,10 @@ namespace Data.Setup
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 4;
                 options.User.RequireUniqueEmail = true;
+                options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+                options.SignIn.RequireConfirmedEmail = true;
             })
-            .AddRoles<Role>()
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<UserDbContext>()
             .AddDefaultTokenProviders();
         }

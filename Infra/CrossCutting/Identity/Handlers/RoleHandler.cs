@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Domain.Entities;
 using Domain.Extensions;
 using Domain.Interfaces.Commands;
 using Domain.Interfaces.Handlers;
@@ -18,15 +17,15 @@ namespace Identity.Handlers
         IHandler<GetRoleCommand>,
         IHandler<GetRolesCommand>
     {
-        private RoleManager<Role> _manager;
+        private RoleManager<IdentityRole> _manager;
 
-        public RoleHandler(RoleManager<Role> manager) => _manager = manager;
+        public RoleHandler(RoleManager<IdentityRole> manager) => _manager = manager;
 
         public async Task<ICommandResult> Handler(CreateRoleCommand command)
         {
             try
             {
-                Role role = new Role(command.Name);
+                IdentityRole role = new IdentityRole(command.Name) { NormalizedName = command.Name.ToUpper() };
                 IdentityResult result = await _manager.CreateAsync(role);
                 if (result.Succeeded)
                     return new CommandResult(true, "", result);
@@ -40,7 +39,7 @@ namespace Identity.Handlers
 
         public async Task<ICommandResult> Handler(GetRoleCommand command)
         {
-            Role role = await _manager.FindByNameAsync(command.Name);
+            IdentityRole role = await _manager.FindByNameAsync(command.Name);
             if (role == null)
                 return new CommandResult(false, "", null);
             return new CommandResult(true, "", role.Name);
@@ -48,7 +47,7 @@ namespace Identity.Handlers
 
         public async Task<ICommandResult> Handler(GetRolesCommand command)
         {
-            List<Role> roles = await _manager.Roles
+            List<IdentityRole> roles = await _manager.Roles
                 .AsNoTracking()
                 .ToListAsync();
 

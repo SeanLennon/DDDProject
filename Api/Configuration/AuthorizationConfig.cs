@@ -1,3 +1,4 @@
+using Api.Authorization.Requirements;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +14,24 @@ namespace Api.Configuration
                 x.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser().Build();
 
-                x.AddPolicy("Default", p =>
+                x.AddPolicy("NoneOnly", x =>
                 {
-                    p.RequireRole("User");
-                    p.RequireAssertion(c => c.User.IsInRole("User"));
+                    x.Requirements.Add(new UserRolesRequirement(new string[] { "None" }));
+                });
+
+                x.AddPolicy("ManagerOnly", x =>
+                {
+                    x.Requirements.Add(new UserRolesRequirement(new string[] { "Manager" }));
+                });
+
+                x.AddPolicy("AdminOnly", x =>
+                {
+                    x.Requirements.Add(new UserRolesRequirement(new string[] { "Admin" }));
+                });
+
+                x.AddPolicy("UserOnly", x =>
+                {
+                    x.Requirements.Add(new UserRolesRequirement(new string[] { "User" }));
                 });
             });
         }

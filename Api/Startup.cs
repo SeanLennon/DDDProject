@@ -2,8 +2,11 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Api.Authorization.Handlers;
 using Api.Builders;
 using Api.Configuration;
+using Api.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -38,6 +41,7 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IAuthorizationHandler, UserRolesHandler>();
             services.AddHstsConfig();
             services.AddResponseCompressionConfig();
             services.AddDatabaseConfig(_configuration);
