@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Security.Claims;
 using Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -11,16 +10,16 @@ namespace Domain.Entities
     {
         protected User() { }
 
-        public User(string fullName, string username, string email)
+        public User(string fullName, string username, string email, IList<string> roles)
         {
             FullName = fullName ?? "Anonymous";
             FirstName = FullName.ToFirstName();
             LastName = FullName.ToLastName();
-            Email = email;
             UserName = username.ToUserName();
+            Email = email;
             NormalizedEmail = email.ToUpper();
             NormalizedUserName = UserName.ToUpper();
-            Roles = new List<string>();
+            Roles = roles;
             Claims = new List<Claim>
             {
                 new Claim("user_name", UserName),
@@ -43,7 +42,7 @@ namespace Domain.Entities
         public override string ToString() => $"{FirstName} {LastName}";
 
         public void AddClaims(IEnumerable<Claim> claims) => Claims = claims;
-        public IList<string> AddRoles(IList<string> roles) => Roles = roles;
+        // public void AddRoles(IList<string> roles) => Roles = roles;
         public void ChangeName(string fullName)
         {
             FullName = fullName;

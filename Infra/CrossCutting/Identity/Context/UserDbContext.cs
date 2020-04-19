@@ -84,7 +84,8 @@ namespace Identity.Context
             string email = "seantpd@gmail.com";
             string username = "dev_master";
             string name = "Sean Ono Lennon Pessoa";
-            User user = new User(name, username, email);
+            var roles = new List<string>(){ "Manager" };
+            User user = new User(name, username, email, roles);
 
             builder.Entity<User>()
                 .HasData(user);

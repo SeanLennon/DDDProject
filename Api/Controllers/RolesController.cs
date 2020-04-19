@@ -7,7 +7,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Api.Controllers
 {
-    [Authorize(Policy = "Default"), Route("roles"), ApiVersion("1.0"), ApiController]
+    [Authorize, Route("roles"), ApiVersion("1.0"), ApiController]
     public class RolesController : ControllerBase
     {
         private RoleHandler _handler;
@@ -20,6 +20,7 @@ namespace Api.Controllers
         }
 
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> Get([FromForm]CreateRoleCommand command)
         {

@@ -12,7 +12,7 @@ using Domain.Resources;
 using Identity.Commands;
 using Identity.Commands.Users;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
 
 namespace Identity.Handlers
 {
@@ -42,36 +42,31 @@ namespace Identity.Handlers
         {
             try
             {
-                User user = new User(command.FullName, command.UserName, command.Email);
+                User user = new User(command.FullName, command.UserName, command.Email, command.Roles);
                 IdentityResult result = await _service.InsertAsync(user, command.Password);
                 if (result.Succeeded)
                 {
                     await _userManager.AddClaimsAsync(user, user.Claims);
-                    await _userManager.AddToRolesAsync(user, command.Roles);
-
+                    await _userManager.AddToRolesAsync(user, user.Roles);
                     string message = await _service.CreateWellcomeMessage(user.FirstName);
 
-                    // TODO: Refatorar para enviar email à uma fila em redis ou rabbitmq
-                    /* var factory = new ConnectionFactory() { HostName = "localhost" };
+                    var factory = new ConnectionFactory() { HostName = "localhost" };
                     using var connection = factory.CreateConnection();
                     using (var channel = connection.CreateModel())
                     {
-                        channel.QueueDeclare(queue: "email",
+                        /* channel.QueueDeclare(queue: "email",
                                              durable: false,
                                              exclusive: false,
                                              autoDelete: false,
-                                             arguments: null);
-                        var body = Encoding.UTF8.GetBytes(message);
+                                             arguments: null); */
 
                         channel.BasicPublish(exchange: "",
                                              routingKey: "email",
                                              basicProperties: null,
-                                             body: body);
-                        _logger.Debug(message);
-                    }; */
-                    
+                                             body: Encoding.UTF8.GetBytes($"{user.Email}, {message}, Wellcome"));
+                    };
 
-                    SmtpStatusCode status = await _service.SendAsync(user.Email, message, subject: "Bem-vindo!");
+                    SmtpStatusCode status = await _service.SendAsync(user.Email, message, subject: "Wellcome");
                     if (status == SmtpStatusCode.GeneralFailure)
                         return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 

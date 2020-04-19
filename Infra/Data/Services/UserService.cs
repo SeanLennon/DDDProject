@@ -91,39 +91,38 @@ namespace Data.Services
         }
 
 
-        public Task<SmtpStatusCode> SendAsync(string email, string message, string subject)
+        public async Task<SmtpStatusCode> SendAsync(string email, string message, string subject)
         {
-            return Task<SmtpStatusCode>.Run(async () =>
+            using var smtp = new SmtpClient(_settings.Server)
             {
-                using var smtp = new SmtpClient(_settings.Server)
-                {
-                    Port = _settings.Port,
-                    Credentials = new NetworkCredential(_settings.From, _settings.Password),
-                    EnableSsl = true
-                };
+                Port = _settings.Port,
+                Credentials = new NetworkCredential(_settings.From, _settings.Password),
+                EnableSsl = true
+            };
 
-                using var mail = new MailMessage()
-                {
-                    From = new MailAddress(email),
-                    Subject = subject,
-                    Body = message,
-                    IsBodyHtml = true,
-                };
-                mail.To.Add(email);
-                try
-                {
-                    await smtp.SendMailAsync(mail);
-                    return await Task.FromResult(SmtpStatusCode.Ok);
-                }
-                catch (SmtpException)
-                {
-                    return await Task.FromResult(SmtpStatusCode.GeneralFailure);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            });
+            using var mail = new MailMessage()
+            {
+                From = new MailAddress(email),
+                Subject = subject,
+                Body = message,
+                IsBodyHtml = true,
+            };
+
+            mail.To.Add(email);
+
+            try
+            {
+                await smtp.SendMailAsync(mail);
+                return SmtpStatusCode.Ok;
+            }
+            catch (SmtpException)
+            {
+                return SmtpStatusCode.GeneralFailure;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public Task<String> CreateMessageForgotPassword(string email, string token)

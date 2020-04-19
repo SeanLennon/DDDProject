@@ -8,7 +8,7 @@ namespace Identity.Commands.Users
 {
     public class RegisterUserCommand : ICommandResult
     {
-        [Required, MaxLength(100)]
+        [Required(ErrorMessage = "Nome de usuário é obrigatório."), MaxLength(100)]
         public string UserName { get; set; }
 
         [Required, MaxLength(100)]
