@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using Domain.Interfaces.Commands;
-using Microsoft.AspNetCore.Identity;
+using Domain.Interfaces.Commands.Users;
 
 namespace Identity.Commands.Users
 {
-    public class RegisterUserCommand : ICommandResult
+    public class RegisterUserCommand : ICommandResult, IRegisterUserCommand
     {
         [Required(ErrorMessage = "Nome de usuário é obrigatório."), MaxLength(100)]
         public string UserName { get; set; }

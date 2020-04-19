@@ -2,6 +2,7 @@ using Data.Context;
 using Data.Repositories;
 using Data.Services;
 using Domain.Entities;
+using Domain.Interfaces.Commands.Users;
 using Domain.Interfaces.Managers;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
@@ -41,6 +42,7 @@ namespace IoC.NativeDependency
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddScoped<IRegisterUserCommand, RegisterUserCommand>();
             services.AddScoped<AuthenticatedUser>();
             services.AddScoped<ResetPasswordContextAccessor>();
             services.AddScoped<ProfileUserCommand>();

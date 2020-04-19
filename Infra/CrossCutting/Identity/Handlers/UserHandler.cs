@@ -54,12 +54,6 @@ namespace Identity.Handlers
                     using var connection = factory.CreateConnection();
                     using (var channel = connection.CreateModel())
                     {
-                        /* channel.QueueDeclare(queue: "email",
-                                             durable: false,
-                                             exclusive: false,
-                                             autoDelete: false,
-                                             arguments: null); */
-
                         channel.BasicPublish(exchange: "",
                                              routingKey: "email",
                                              basicProperties: null,
