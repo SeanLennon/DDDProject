@@ -6,6 +6,7 @@ using Api.Authorization.Handlers;
 using Api.Builders;
 using Api.Configuration;
 using Api.Helpers;
+using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

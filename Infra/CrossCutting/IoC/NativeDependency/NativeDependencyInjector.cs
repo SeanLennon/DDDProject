@@ -9,9 +9,8 @@ using Domain.Interfaces.Services;
 using Identity.Commands.Users;
 using Identity.Context;
 using Identity.Handlers;
+using Identity.Managers;
 using Identity.Models;
-using Identity.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +22,7 @@ namespace IoC.NativeDependency
         public static void Inject(IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
-
-            services.AddScoped<IEmailSender, Data.Services.EmailService>();
+            services.AddScoped<IEmailSender, EmailManager>();
 
             services.AddTransient<UserDbContext>();
             services.AddTransient<AppDbContext>();

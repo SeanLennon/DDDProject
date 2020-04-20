@@ -1,6 +1,5 @@
 using System;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Extensions;
@@ -12,7 +11,6 @@ using Domain.Resources;
 using Identity.Commands;
 using Identity.Commands.Users;
 using Microsoft.AspNetCore.Identity;
-using RabbitMQ.Client;
 
 namespace Identity.Handlers
 {
@@ -28,12 +26,14 @@ namespace Identity.Handlers
         private IUserService _service;
         private ILoggerManager _logger;
         private UserManager<User> _userManager;
+        private IEmailSender _emailService;
 
-        public UserHandler(IUserService service, UserManager<User> userManager, ILoggerManager logger)
+        public UserHandler(IUserService service, UserManager<User> userManager, ILoggerManager logger, IEmailSender emailSender)
         {
             _service = service;
             _logger = logger;
             _userManager = userManager;
+            _emailService = emailSender;
         }
 
 
@@ -48,9 +48,11 @@ namespace Identity.Handlers
                 {
                     await _userManager.AddClaimsAsync(user, user.Claims);
                     await _userManager.AddToRolesAsync(user, user.Roles);
-                    string message = await _service.CreateWellcomeMessage(user.FirstName);
 
-                    var factory = new ConnectionFactory() { HostName = "localhost" };
+                    string message = await _emailService.CreateWellcomeMessage(user.FirstName);
+                    SmtpStatusCode status = await _emailService.SendAsync(user.Email, message, "Wellcome");
+
+                    /* var factory = new ConnectionFactory() { HostName = "localhost" };
                     using var connection = factory.CreateConnection();
                     using (var channel = connection.CreateModel())
                     {
@@ -58,9 +60,8 @@ namespace Identity.Handlers
                                              routingKey: "email",
                                              basicProperties: null,
                                              body: Encoding.UTF8.GetBytes($"{user.Email}, {message}, Wellcome"));
-                    };
+                    }; */
 
-                    SmtpStatusCode status = await _service.SendAsync(user.Email, message, subject: "Wellcome");
                     if (status == SmtpStatusCode.GeneralFailure)
                         return new CommandResult(false, Messages.FORGOT_PASSWORD_FAILED, null);
 

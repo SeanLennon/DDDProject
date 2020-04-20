@@ -14,7 +14,7 @@ namespace Identity.Models
         public string Email => GetClaims(ClaimTypes.Email);
         public string Name => GetClaims(ClaimTypes.GivenName);
         public string UserName => GetClaims(ClaimTypes.Name);
-        public string Role => GetClaims(ClaimTypes.Role);
+        public string Role => GetClaims(ClaimTypes.Role);// 20 20 00 06 07 98 02 5 protocol
         public string Token => _accessor.HttpContext.Request.Query?.FirstOrDefault(x => x.Key == "token").Value;
 
         public string GetClaims(string type)

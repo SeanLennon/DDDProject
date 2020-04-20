@@ -1,7 +1,7 @@
 using Domain.Interfaces.Managers;
 using NLog;
 
-namespace Identity.Services
+namespace Identity.Managers
 {
     public class LoggerManager : ILoggerManager
     {
